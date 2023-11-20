@@ -1,18 +1,67 @@
 package com.walking.intensive.chapter1.task5;
 
+import java.io.BufferedReader;
+import java.io.IOException;
+import java.io.InputStreamReader;
+
 /**
  * Условие: <a href="https://geometry-math.ru/homework/Java-triangle.html">ссылка</a>
  */
 public class Main {
-    public static void main(String[] args) {
+    public static void main(String[] args) throws IOException {
 //        Для собственных проверок можете делать любые изменения в этом методе
 
+        BufferedReader reader = new BufferedReader(new InputStreamReader(System.in));
+        System.out.println("Введите длины сторон треугольника. Каждую с новой строки: ");
+        double a = Double.parseDouble(reader.readLine());
+        double b = Double.parseDouble(reader.readLine());
+        double c = Double.parseDouble(reader.readLine());
+
+        if (a <= 0 || b <= 0 || c <= 0) System.out.println("Треугольник не существует");
+        else if (a + b == c || a + c == b || b + c == a) System.out.println("Треугольник является вырожденным");
+        else {
+            System.out.println("Введите номер пункта, который выдаст информацию\n" +
+                    "1) О площади треугольника формулой Герона.\n" +
+                    "2) О длинах всех высот треугольника.\n" +
+                    "3) О длинах всех медиан треугольника.\n" +
+                    "4) О длинах всех биссектрис треугольника.\n" +
+                    "5) О значениях всех углов треугольника в градусах.\n" +
+                    "6) О длине радиуса вписанной в треугольник окружности.\n" +
+                    "7) О длине радиуса описанной вокруг треугольника окружности.\n" +
+                    "8) О площади треугольника, найденной через синус и косинус\n");
+            switch (Integer.parseInt(reader.readLine())) {
+                case 1 -> System.out.println("S треугольника равна " + getAreaByHeron(a, b, c));
+                case 2 -> System.out.println("Длины высот равны: " + getHeights(a, b, c));
+                case 3 -> System.out.println("Длины медиан равны: " + getMedians(a, b, c));
+                case 4 -> System.out.println("Длины биссектрис равны: " + getBisectors(a, b, c));
+                case 5 -> System.out.println("Значения углов треугольника" + getAngles(a, b, c));
+                case 6 -> System.out.println("Длина радиуса впис. окр. равна: " + getInscribedCircleRadius(a, b, c));
+                case 7 -> System.out.println("Длина радиуса опис. окр. равна: " + getCircumradius(a, b, c));
+                case 8 -> System.out.println("S треугольника равна " + getAreaAdvanced(a, b, c));
+            }
+        }
+    }
+
+    static double[] sorter(double[] array) {
+        double[] sortedArray = array;
+        for (int i = array.length - 1; i >= 1; i--) {
+            for (int j = 0; j < i; j++) {
+                if (sortedArray[j] > sortedArray[j + 1]) {
+                    double swap = sortedArray[j];
+                    sortedArray[j] = sortedArray[j + 1];
+                    sortedArray[j + 1] = swap;
+                }
+            }
+        }
+        return sortedArray;
     }
 
     static double getAreaByHeron(double a, double b, double c) {
         //        Место для вашего кода
+        double halfPerimeter = (a + b + c) / 2;
+        double triangleArea = Math.sqrt(halfPerimeter * (halfPerimeter - a) * (halfPerimeter - b) * (halfPerimeter - c));
 
-        return 0; // Заглушка. При реализации - удалить
+        return triangleArea;
     }
 
     /**
@@ -20,8 +69,14 @@ public class Main {
      */
     static double[] getHeights(double a, double b, double c) {
         //        Место для вашего кода
-
-        return null; // Заглушка. При реализации - удалить
+        double[] heights = new double[3];
+        double halfPerimeter = (a + b + c) / 2;
+        double formulaNumerator = 2 * Math.sqrt(halfPerimeter * (halfPerimeter - a) * (halfPerimeter - b) * (halfPerimeter - c));//числитель формулы
+        heights[0] = formulaNumerator / a;
+        heights[1] = formulaNumerator / b;
+        heights[2] = formulaNumerator / c;
+        heights = sorter(heights);
+        return heights;
     }
 
     /**
@@ -29,8 +84,13 @@ public class Main {
      */
     static double[] getMedians(double a, double b, double c) {
         //        Место для вашего кода
+        double[] medians = new double[3];
+        medians[0] = (1 / 2) * Math.sqrt(2 * (b * b + c * c) - a * a);
+        medians[1] = (1 / 2) * Math.sqrt(2 * (a * a + c * c) - b * b);
+        medians[2] = (1 / 2) * Math.sqrt(2 * (a * a + b * b) - c * c);
 
-        return null; // Заглушка. При реализации - удалить
+        medians = sorter(medians);
+        return medians;
     }
 
     /**
@@ -38,8 +98,14 @@ public class Main {
      */
     static double[] getBisectors(double a, double b, double c) {
         //        Место для вашего кода
+        double[] bisectors = new double[3];
+        bisectors[0] = Math.sqrt(b * c * (a + b + c) * (b + c - a)) / (b + c);
+        bisectors[1] = Math.sqrt(a * c * (b + a + c) * (a + c - b)) / (a + c);
+        bisectors[2] = Math.sqrt(b * a * (c + b + a) * (b + a - c)) / (b + a);
 
-        return null; // Заглушка. При реализации - удалить
+        bisectors = sorter(bisectors);
+
+        return bisectors;
     }
 
     /**
@@ -48,24 +114,40 @@ public class Main {
     static double[] getAngles(double a, double b, double c) {
         //        Место для вашего кода
 
-        return null; // Заглушка. При реализации - удалить
+        double[] angles = new double[3];
+        angles[0] = Math.acos((b * b + c * c - a * a) / 2 * b * c);
+        angles[1] = Math.acos((b * b + a * a - c * c) / 2 * a * b);
+        angles[2] = Math.acos((a * a + c * c - b * b) / 2 * a * c);
+
+        angles = sorter(angles);
+
+        return angles;
     }
 
     static double getInscribedCircleRadius(double a, double b, double c) {
         //        Место для вашего кода
+        //используем для нахождения площади по ф-ле Герона метод getAreaByHeron
+        double inscribedCircleRadius = 2 * getAreaByHeron(a, b, c) / (a + b + c);
 
-        return 0; // Заглушка. При реализации - удалить
+        return inscribedCircleRadius;
     }
 
     static double getCircumradius(double a, double b, double c) {
         //        Место для вашего кода
+        double circumradius = a * b * c / 4 * getAreaByHeron(a, b, c);
 
-        return 0; // Заглушка. При реализации - удалить
+        return circumradius;
     }
 
     static double getAreaAdvanced(double a, double b, double c) {
         //        Место для вашего кода
+        //a^2 = b^2 + c^2 - 2bc*cos α-- теорема косинусов
+        //sin^2 a + cos^2 a = 1 -- осн-е триг-е тожд-во
 
-        return 0; // Заглушка. При реализации - удалить
+        double cosA = (b * b + c * c - a * a) / 2 * b * c;
+        double sinA = Math.sqrt(1 - cosA * cosA);
+        double triangleArea = a * b * sinA / 2;
+
+        return triangleArea;
     }
 }
